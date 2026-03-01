@@ -85,7 +85,9 @@ nav.bottom-nav {
   align-items: center;
   gap: 0.25rem;
   font-size: 0.625rem;          /* 10px */
-  color: #a1a1aa;               /* zinc-400 */
+  color: #a1a1aa;   
+  border: transparent;
+  background-color: transparent;            /* zinc-400 */
   transition: color 0.2s;
   width: 3.5rem;
 }
