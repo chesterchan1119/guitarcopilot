@@ -213,3 +213,38 @@
 .pattern-card:hover .play-overlay-btn {
   animation: pulse-glow 1.5s infinite;
 }
+/* Make sure pattern-card can position the progress bar */
+.pattern-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.pattern-card.playing {
+  border-left-color: #00f0ff !important;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.7) !important;
+}
+
+/* Neon progress bar container (bottom edge) */
+.progress-bar-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(10, 20, 60, 0.6); /* subtle background */
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+/* The glowing fill bar */
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00f0ff, #1f51ff);
+  box-shadow: 
+    0 0 10px #00f0ff,
+    0 0 20px #00f0ff,
+    0 0 30px rgba(31, 81, 255, 0.6);
+  transition: width 0.08s linear;
+}
