@@ -1,7 +1,8 @@
 // src/components/AIArrange/AIArrange.jsx
 import { useState, useRef, useEffect } from 'react';
 import * as Tone from 'tone';
-import guitarPatterns from '../../data/guitarPatterns'; // your .js file
+import guitarPatterns from '../../data/guitarPatterns';
+import { patternNotesMap } from '../../data/patternNotes';
 import "./AIArrange.css";
 
 export default function AIArrangeTab() {
@@ -9,35 +10,28 @@ export default function AIArrangeTab() {
   const [suggestions, setSuggestions] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [audioStatus, setAudioStatus] = useState('Not started');
-  const [playingIndex, setPlayingIndex] = useState(null); // which pattern is playing
-  const [progress, setProgress] = useState(0);           // 0–100%
+  const [playingIndex, setPlayingIndex] = useState(null);
+  const [progress, setProgress] = useState(0);
 
   const pluckSynthRef = useRef(null);
   const sequenceRef = useRef(null);
-  const rafRef = useRef(null); // animation frame for progress
+  const rafRef = useRef(null);
 
-  // Initialize audio system (only once)
   const initAudioIfNeeded = async () => {
     if (Tone.context.state !== 'running') {
       await Tone.start();
       setAudioStatus('AudioContext resumed');
-      console.log('AudioContext resumed on user gesture');
+      console.log('AudioContext resumed');
     }
 
     if (!pluckSynthRef.current) {
-      // Tuned PluckSynth for realistic fingerstyle guitar sound
       pluckSynthRef.current = new Tone.PluckSynth({
-        attackNoise: 2.5,      // crisp string attack
-        dampening: 5200,       // bright but natural decay
-        resonance: 0.91,       // good string sustain & fade
+        attackNoise: 2.5,
+        dampening: 5200,
+        resonance: 0.91,
       }).toDestination();
 
-      // Add subtle reverb + chorus for acoustic depth
-      const reverb = new Tone.Reverb({
-        decay: 2.2,
-        wet: 0.18,
-      }).toDestination();
-
+      const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.18 }).toDestination();
       const chorus = new Tone.Chorus({
         frequency: 1.4,
         delayTime: 3.5,
@@ -46,8 +40,7 @@ export default function AIArrangeTab() {
       }).toDestination();
 
       pluckSynthRef.current.chain(chorus, reverb);
-
-      console.log('PluckSynth ready – guitar-like fingerstyle tone');
+      console.log('PluckSynth ready');
     }
   };
 
@@ -64,7 +57,7 @@ export default function AIArrangeTab() {
     try {
       await initAudioIfNeeded();
 
-      // 1. Stop & clean any existing sequence
+      // Stop & clean previous playback
       if (sequenceRef.current) {
         sequenceRef.current.stop();
         sequenceRef.current.dispose();
@@ -75,62 +68,60 @@ export default function AIArrangeTab() {
         rafRef.current = null;
       }
 
-      // Reset UI for this card
       setPlayingIndex(index);
       setProgress(0);
 
-      if (title.includes('C Major Arpeggio')) {
-        const arpNotes = ['C4', 'E4', 'G4', 'C5', 'E4', 'C4'];
-        const noteDuration = '16n'; // fast arpeggio (use '12n' or '8n' for slower)
-        const totalDuration = Tone.Time(noteDuration).toSeconds() * arpNotes.length;
+      // Get notes & duration
+      const config = patternNotesMap[title] || patternNotesMap.default;
+      const arpNotes = config.notes;
+      const noteDuration = config.duration;
 
-        // Create brand-new sequence every time
-        sequenceRef.current = new Tone.Sequence(
-          (time, note) => {
-            pluckSynthRef.current.triggerAttack(note, time);
-          },
-          arpNotes,
-          noteDuration
-        );
+      const totalDuration = Tone.Time(noteDuration).toSeconds() * arpNotes.length;
 
-        // Schedule from "now" + tiny offset (prevents scheduling in the past)
-        const startTime = Tone.now() + 0.03;
+      // New sequence
+      sequenceRef.current = new Tone.Sequence(
+        (time, note) => {
+          pluckSynthRef.current.triggerAttack(note, time);
+        },
+        arpNotes,
+        noteDuration
+      );
 
-        sequenceRef.current.start(startTime);
-        sequenceRef.current.loop = false;
+      const startTime = Tone.now() + 0.03;
+      sequenceRef.current.start(startTime);
+      sequenceRef.current.loop = false;
 
-        // Start Transport only if not already running
-        if (Tone.Transport.state !== 'started') {
-          Tone.Transport.start();
-        }
-
-        // Real-time progress bar animation
-        const updateProgress = () => {
-          const elapsed = Tone.Transport.seconds - startTime;
-          const prog = Math.min(100, (elapsed / totalDuration) * 100);
-          setProgress(prog);
-
-          if (prog < 100 && sequenceRef.current) {
-            rafRef.current = requestAnimationFrame(updateProgress);
-          } else {
-            setPlayingIndex(null); // hide progress when finished
-          }
-        };
-        rafRef.current = requestAnimationFrame(updateProgress);
-
-        console.log(`Playing C Major Arpeggio at ${startTime.toFixed(2)}s | ${arpNotes.join(' → ')}`);
-      } else {
-        // Fallback for other patterns
-        pluckSynthRef.current.triggerAttackRelease('C4', '8n');
-        alert(`Basic pluck demo for:\n${title}\n(Full pattern not implemented yet)`);
+      if (Tone.Transport.state !== 'started') {
+        Tone.Transport.start();
       }
+
+      // Progress bar logic — more reliable timing
+      const progressStart = Tone.now();
+      const updateProgress = () => {
+        const now = Tone.now();
+        const elapsed = now - progressStart;
+        let prog = (elapsed / totalDuration) * 100;
+        prog = Math.min(100, prog);
+
+        setProgress(prog);
+
+        if (prog < 100 && sequenceRef.current) {
+          rafRef.current = requestAnimationFrame(updateProgress);
+        } else {
+          setPlayingIndex(null);
+          setProgress(0);
+        }
+      };
+
+      rafRef.current = requestAnimationFrame(updateProgress);
+
+      console.log(`Playing "${title}" | ${arpNotes.join(' → ')} | ${noteDuration}`);
     } catch (err) {
       console.error('Playback error:', err);
-      alert('Audio playback failed. Check console for details.');
+      alert('Audio playback failed. Check console.');
     }
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (sequenceRef.current) {
@@ -171,7 +162,6 @@ export default function AIArrangeTab() {
           </select>
         </div>
 
-        {/* Optional: keep for future */}
         <div className="form-group">
           <label>Upload Song (optional)</label>
           <input type="file" accept="audio/*" disabled />
@@ -216,10 +206,13 @@ export default function AIArrangeTab() {
                 ▶
               </button>
 
-              {/* Neon progress bar at bottom edge */}
+              {/* Neon progress bar – always render when playing */}
               {playingIndex === index && (
                 <div className="progress-bar-container">
-                  <div className="progress-bar" style={{ width: `${progress}%` }} />
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               )}
             </div>
