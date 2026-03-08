@@ -2,6 +2,7 @@
 import { useState } from 'react';
 
 import TunerTab from './components/TunerTab.jsx';   // adjust path if different
+import AIArrangeTab from './components/AIArrange/AIArrange.jsx';
 export default function App() {
   const [activeTab, setActiveTab] = useState('tuner');
 
@@ -27,7 +28,7 @@ export default function App() {
         {activeTab === 'tuner' && <TunerTab />}
         {activeTab === 'metronome' && <div className="card">Metronome coming soon… ⏱️</div>}
         {activeTab === 'reels'     && <div className="card">Reels coming soon… 🎥</div>}
-        {activeTab === 'scales'    && <div className="card">Scales / Song listener coming soon… 🎵</div>}
+        {activeTab === 'scales'    && <AIArrangeTab />}
         {activeTab === 'jot'       && <div className="card">Tab jotter coming soon… ✍️</div>}
       </main>
 
@@ -59,7 +60,7 @@ export default function App() {
           className={`nav-btn ${activeTab === 'scales' ? 'active' : ''}`}
         >
           <span style={{ fontSize: '1.5rem' }}>🎼</span>
-          Scales
+          Arrangement
         </button>
         <button 
           onClick={() => setActiveTab('jot')}

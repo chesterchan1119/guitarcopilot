@@ -1,0 +1,215 @@
+.ai-arrange-tab {
+  padding: 1.5rem 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+  color: #e0f7ff;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.ai-arrange-tab h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #00f0ff;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #a0d0ff;
+  margin-bottom: 1.8rem;
+}
+
+.form-card {
+  background: rgba(20, 30, 60, 0.7);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #1f51ff;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), 0 0 30px rgba(31, 81, 255, 0.2);
+  backdrop-filter: blur(8px);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.4rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  color: #00f0ff;
+  font-size: 0.95rem;
+}
+
+.form-group select,
+.form-group input[type="file"],
+.form-group input[type="url"] {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #1f51ff;
+  border-radius: 0.6rem;
+  background: rgba(10, 20, 50, 0.6);
+  color: white;
+  font-size: 1rem;
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: bold;
+  border-radius: 999px;
+  background: linear-gradient(45deg, #1f51ff, #00f0ff);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(0, 240, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.generate-btn:hover:not(:disabled) {
+  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.7);
+  transform: translateY(-2px);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Suggestions Panel - fixed bottom style */
+.suggestions-panel {
+  background: rgba(10, 20, 60, 0.92);
+  border-top: 2px solid #00f0ff;
+  box-shadow: 0 -10px 30px rgba(0, 240, 255, 0.5);
+  padding: 1.2rem 1rem;
+  backdrop-filter: blur(12px);
+  margin-top: 2rem;
+  border-radius: 1.2rem 1.2rem 0 0;
+}
+
+.suggestions-panel h3 {
+  margin: 0 0 1.2rem;
+  color: #00f0ff;
+  font-size: 1.25rem;
+  text-shadow: 0 0 10px #00f0ff;
+}
+
+.pattern-card {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1.1rem;
+  border-radius: 0.8rem;
+  margin-bottom: 1.2rem;
+  border-left: 4px solid #00f0ff;
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.pattern-title {
+  display: block;
+  color: #00f0ff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.pattern-meta {
+  color: #a0d0ff;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  font-style: italic;
+}
+
+.tab-display {
+  font-family: 'Courier New', monospace;
+  white-space: pre;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #e0f7ff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.placeholder-text {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  margin-top: 3rem;
+  font-style: italic;
+}
+
+/* Mobile adjustments */
+@media (min-width: 640px) {
+  .ai-arrange-tab {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+/* ... existing styles remain ... */
+
+/* Pattern card - make position relative so overlay can be absolute */
+.pattern-card {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1.1rem;
+  border-radius: 0.8rem;
+  margin-bottom: 1.2rem;
+  border-left: 4px solid #00f0ff;
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.15);
+  position: relative;               /* ← NEW: for absolute positioning */
+  overflow: hidden;                 /* ← prevents overflow issues */
+  transition: all 0.2s ease;
+}
+
+.pattern-card:hover {
+  box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.3),
+              0 4px 15px rgba(0, 240, 255, 0.25);
+}
+
+/* Overlay Play button - bottom left */
+.play-overlay-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(31, 81, 255, 0.75); /* semi-transparent neon deep blue */
+  border: 2px solid #00f0ff;
+  color: #00f0ff;
+  font-size: 1.6rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  transition: all 0.18s ease;
+  z-index: 5;
+}
+
+.play-overlay-btn:hover {
+  background: rgba(0, 240, 255, 0.85);
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.9);
+}
+
+.play-overlay-btn:active {
+  transform: scale(0.95);
+}
+
+/* Optional: subtle pulse animation on load or hover */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
+}
+
+.pattern-card:hover .play-overlay-btn {
+  animation: pulse-glow 1.5s infinite;
+}
